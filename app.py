@@ -2,21 +2,24 @@ import streamlit as st
 import pickle
 import numpy as np
 
-# Load XGBoost model and label encoder
+# Load model, vectorizer, dan label encoder
 @st.cache_resource
-def load_model():
+def load_components():
     with open("xgboost_model.pkl", "rb") as f:
         model = pickle.load(f)
+    with open("vectorizer.pkl", "rb") as f:
+        vectorizer = pickle.load(f)
     with open("label_encoder.pkl", "rb") as f:
         le = pickle.load(f)
-    return model, le
+    return model, vectorizer, le
 
-model, le = load_model()
+model, vectorizer, le = load_components()
 
-# Prediction with real probability
+# Prediksi dengan probabilitas
 def predict_with_prob(text):
-    prob = model.predict_proba([text])[0]
-    return prob  # urutan: [FAKE, REAL]
+    X_input = vectorizer.transform([text])
+    probs = model.predict_proba(X_input)[0]
+    return probs
 
 # Streamlit UI
 def main():
@@ -32,7 +35,7 @@ def main():
         """### Welcome!
 This app uses a **TF-IDF + XGBoost** model to classify news content as **FAKE** or **REAL**.  
 #### Model Info  
-Trained locally using 54k+ preprocessed English-language fake news data.
+Trained on 54k+ preprocessed English-language news samples.
 """,
         unsafe_allow_html=True,
     )
@@ -49,9 +52,9 @@ Trained locally using 54k+ preprocessed English-language fake news data.
                 st.warning("Text cannot be empty.")
             else:
                 probs = predict_with_prob(user_input)
-                labels_map = {0: "FAKE", 1: "REAL"}
-                pred_label = labels_map[int(np.argmax(probs))]
-                confidence = round(max(probs) * 100, 2)
+                pred_index = int(np.argmax(probs))
+                pred_label = le.inverse_transform([pred_index])[0]
+                confidence = round(probs[pred_index] * 100, 2)
 
                 if pred_label == "REAL":
                     st.success(f"Prediction: **{pred_label}** ({confidence}% confident)")
@@ -61,8 +64,8 @@ Trained locally using 54k+ preprocessed English-language fake news data.
                 st.markdown("#### Confidence per class")
                 st.bar_chart({
                     "Confidence": {
-                        "FAKE": probs[0],
-                        "REAL": probs[1]
+                        le.inverse_transform([0])[0]: probs[0],
+                        le.inverse_transform([1])[0]: probs[1]
                     }
                 })
 
