@@ -89,15 +89,15 @@ Trained on 54k+ preprocessed English-language news samples.
                 # Plot pakai matplotlib (seperti confidence bar)
                 # Plot pakai matplotlib (match dark mode)
                 fig, ax = plt.subplots(figsize=(6, 4))
-                colors = ['#1f77b4' if val > 0 else '#E74C3C' for val in shap_df.shap_value]
+                colors = ['#6EC1E4' if val > 0 else '#C0392B' for val in shap_df.shap_value]
 
                 ax.barh(shap_df.index[::-1], shap_df.shap_value[::-1], color=colors[::-1])
                 ax.set_xlabel("SHAP Value", color='white')
                 ax.set_title("Top Feature Contributions", color='white')
                 ax.tick_params(axis='x', colors='white')
                 ax.tick_params(axis='y', colors='white')
-                fig.patch.set_facecolor('#2c3e50')     # Sesuai background
-                ax.set_facecolor('#2c3e50')            # Area plot
+                fig.patch.set_facecolor('#0E1117')     # Sesuai background
+                ax.set_facecolor('#0E1117')            # Area plot
 
                 st.pyplot(fig)
 
