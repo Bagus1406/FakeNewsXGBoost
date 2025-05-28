@@ -87,14 +87,23 @@ Trained on 54k+ preprocessed English-language news samples.
                 shap_df = shap_df.head(N)
 
                 # Plot pakai matplotlib (seperti confidence bar)
-                fig, ax = plt.subplots(figsize=(6, 4))
-                colors = ['red' if val > 0 else 'blue' for val in shap_df.shap_value]
-            
-                ax.barh(shap_df.index[::-1], shap_df.shap_value[::-1], color=colors[::-1])
-                ax.set_xlabel("SHAP Value")
-                ax.set_title("Top Feature Contributions")
+# Plot pakai matplotlib (match dark mode)
+                fig, ax = plt.subplots(figsize=(6, 4), facecolor='#0e1117')
+                ax.set_facecolor('#0e1117')
+
+                colors = ['#FF4B4B' if val > 0 else '#1f77b4' for val in shap_df.shap_value]
+
+                bars = ax.barh(shap_df.index[::-1], shap_df.shap_value[::-1], color=colors[::-1])
+                ax.set_xlabel("SHAP Value", color='white')
+                ax.set_title("Top Feature Contributions", color='white')
+                ax.tick_params(colors='white')
+                ax.spines['bottom'].set_color('white')
+                ax.spines['left'].set_color('white')
+                ax.spines['top'].set_visible(False)
+                ax.spines['right'].set_visible(False)
+
                 st.pyplot(fig)
-                st.pyplot(fig)
+
 
     # Credit
     st.markdown("""---""")
