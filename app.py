@@ -74,7 +74,7 @@ Trained on 54k+ preprocessed English-language news samples.
                 X_input = vectorizer.transform([user_input])
                 # Buat explainer hanya untuk input ini
                 explainer = shap.Explainer(model.predict_proba, X_input)
-                shap_values = explainer([X_input])
+                shap_values = explainer(X_input)
 
                 # Display SHAP bar chart
                 fig, ax = plt.subplots()
