@@ -2,7 +2,8 @@ import streamlit as st
 import pickle
 import numpy as np
 import shap
-import matplotlib.pyplot as plt  # <-- penting
+import matplotlib.pyplot as plt
+import pandas as pd
 
 # Load model, vectorizer, dan label encoder
 @st.cache_resource
