@@ -1,6 +1,7 @@
 import streamlit as st
 import pickle
 import numpy as np
+import shap
 
 # Load model, vectorizer, dan label encoder
 @st.cache_resource
@@ -14,7 +15,7 @@ def load_components():
     return model, vectorizer, le
 
 model, vectorizer, le = load_components()
-
+explainer = shap.Explainer(model, vectorizer.transform)
 # Prediksi dengan probabilitas
 def predict_with_prob(text):
     X_input = vectorizer.transform([text])
@@ -68,6 +69,17 @@ Trained on 54k+ preprocessed English-language news samples.
                         le.inverse_transform([1])[0]: probs[1]
                     }
                 })
+
+                # SHAP explanation
+                st.subheader("Why this prediction?")
+                X_input = vectorizer.transform([user_input])
+                shap_values = explainer([X_input])
+
+                # Display SHAP bar chart
+                fig, ax = plt.subplots()
+                shap.plots.bar(shap_values[0], max_display=10, show=False)
+                st.pyplot(fig)
+
 
     # Credit
     st.markdown("""---""")
