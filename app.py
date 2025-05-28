@@ -89,7 +89,7 @@ Trained on 54k+ preprocessed English-language news samples.
                 # Plot pakai matplotlib (seperti confidence bar)
                 # Plot pakai matplotlib (match dark mode)
                 fig, ax = plt.subplots(figsize=(6, 4))
-                colors = ['#6EC1E4' if val > 0 else '#C0392B' for val in shap_df.shap_value]
+                colors = ['#84C8FF' if val > 0 else '#C0392B' for val in shap_df.shap_value]
 
                 ax.barh(shap_df.index[::-1], shap_df.shap_value[::-1], color=colors[::-1])
                 ax.set_xlabel("SHAP Value", color='white')
@@ -98,6 +98,10 @@ Trained on 54k+ preprocessed English-language news samples.
                 ax.tick_params(axis='y', colors='white')
                 fig.patch.set_facecolor('#0E1117')     # Sesuai background
                 ax.set_facecolor('#0E1117')            # Area plot
+
+                # Spines (garis sumbu) putih
+                for spine in ax.spines.values():
+                    spine.set_color('white')
 
                 st.pyplot(fig)
 
