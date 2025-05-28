@@ -2,6 +2,7 @@ import streamlit as st
 import pickle
 import numpy as np
 import shap
+import matplotlib.pyplot as plt  # <-- penting
 
 # Load model, vectorizer, dan label encoder
 @st.cache_resource
@@ -15,11 +16,12 @@ def load_components():
     return model, vectorizer, le
 
 model, vectorizer, le = load_components()
+
 # Prediksi dengan probabilitas
 def predict_with_prob(text):
     X_input = vectorizer.transform([text])
     probs = model.predict_proba(X_input)[0]
-    return probs
+    return probs, X_input
 
 # Streamlit UI
 def main():
@@ -51,7 +53,7 @@ Trained on 54k+ preprocessed English-language news samples.
             if user_input.strip() == "":
                 st.warning("Text cannot be empty.")
             else:
-                probs = predict_with_prob(user_input)
+                probs, X_input = predict_with_prob(user_input)
                 pred_index = int(np.argmax(probs))
                 pred_label = le.inverse_transform([pred_index])[0]
                 confidence = round(probs[pred_index] * 100, 2)
@@ -71,16 +73,16 @@ Trained on 54k+ preprocessed English-language news samples.
 
                 # SHAP explanation
                 st.subheader("Why this prediction?")
-                X_input = vectorizer.transform([user_input])
-                # Buat explainer hanya untuk input ini
-                explainer = shap.Explainer(model.predict_proba, X_input)
-                shap_values = explainer(X_input)
+                explainer = shap.TreeExplainer(model.get_booster())
+                X_input_array = X_input.toarray()
+                shap_values = explainer.shap_values(X_input_array)
 
-                # Display SHAP bar chart
+                feature_names = vectorizer.get_feature_names_out()
+                shap_df = shap.Explanation(values=shap_values[0], feature_names=feature_names, data=X_input_array[0])
+
                 fig, ax = plt.subplots()
-                shap.plots.bar(shap_values[0], max_display=10, show=False)
+                shap.plots.bar(shap_df, max_display=10, show=False)
                 st.pyplot(fig)
-
 
     # Credit
     st.markdown("""---""")
