@@ -91,7 +91,7 @@ Trained on 54k+ preprocessed English-language news samples.
                 fig, ax = plt.subplots(figsize=(6, 4), facecolor='#0e1117')
                 ax.set_facecolor('#0e1117')
 
-                colors = ['#FF4B4B' if val > 0 else '#1f77b4' for val in shap_df.shap_value]
+                colors = ['#D46A6A' if val > 0 else '#1f77b4' for val in shap_df.shap_value]
 
                 bars = ax.barh(shap_df.index[::-1], shap_df.shap_value[::-1], color=colors[::-1])
                 ax.set_xlabel("SHAP Value", color='white')
