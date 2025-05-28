@@ -77,11 +77,22 @@ Trained on 54k+ preprocessed English-language news samples.
                 X_input_array = X_input.toarray()
                 shap_values = explainer.shap_values(X_input_array)
 
+                # Ambil top N fitur
+                N = 10
                 feature_names = vectorizer.get_feature_names_out()
-                shap_df = shap.Explanation(values=shap_values[0], feature_names=feature_names, data=X_input_array[0])
+                shap_dict = dict(zip(vectorizer.get_feature_names_out(), shap_values[0]))
+                shap_df = pd.DataFrame.from_dict(shap_dict, orient='index', columns=['shap_value'])
+                shap_df = shap_df.reindex(shap_df.shap_value.abs().sort_values(ascending=False).index)
+                shap_df = shap_df.head(N)
 
-                fig, ax = plt.subplots()
-                shap.plots.bar(shap_df, max_display=10, show=False)
+                # Plot pakai matplotlib (seperti confidence bar)
+                fig, ax = plt.subplots(figsize=(6, 4))
+                colors = ['red' if val > 0 else 'blue' for val in shap_df.shap_value]
+            
+                ax.barh(shap_df.index[::-1], shap_df.shap_value[::-1], color=colors[::-1])
+                ax.set_xlabel("SHAP Value")
+                ax.set_title("Top Feature Contributions")
+                st.pyplot(fig)
                 st.pyplot(fig)
 
     # Credit
